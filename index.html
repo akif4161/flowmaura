@@ -73,8 +73,8 @@ button{padding:12px 18px;border:none;border-radius:12px;margin:5px;font-weight:b
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = "BURAYA_PROJECT_URL";
-const SUPABASE_KEY = "BURAYA_ANON_KEY";
+const SUPABASE_URL = "https://fojnfagepaqaeiwpunts.supabase.co";
+const SUPABASE_KEY = "sb_publishable_kZ3aqpAtxlcDKOHDeOpkEA_1cdRp2PN";
 let supabaseClient=null;
 try{ supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY); }catch(e){}
 async function kayitOl(){ const email=document.getElementById('email').value; const password=document.getElementById('sifre').value; const {error}=await supabaseClient.auth.signUp({email,password}); if(error) alert(error.message); else alert('Kayıt oldu!'); }
