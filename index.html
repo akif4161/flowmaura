@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FLOWMAURA AI</title>
+<style>
+body{background:#050508;color:white;font-family:Arial;text-align:center;padding:20px;margin:0}
+h1{font-size:42px;letter-spacing:5px;color:#a78bfa}
+.box{background:#111118;border:1px solid #2a2a3a;border-radius:20px;padding:20px;max-width:500px;margin:15px auto}
+input{width:90%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #333;background:#1a1a24;color:white}
+button{padding:12px 18px;border:none;border-radius:12px;margin:5px;font-weight:bold;cursor:pointer}
+.mor{background:#7c3aed;color:white}.mavi{background:#2563eb;color:white}.yesil{background:#16a34a;color:white}.kirmizi{background:#dc2626;color:white}.turuncu{background:#ea580c;color:white}
+#cevap,#haberBox,#sihirBox{background:#1a1a24;padding:15px;border-radius:12px;min-height:60px;text-align:left;margin-top:10px}
+</style>
+</head>
+<body>
+<h1>FLOWMAURA AI</h1>
+<p>Gelecek burada. İzleyen değil, yazan ol.</p>
+
+<!-- HEY AURA - UYANMA -->
+<div class="box" style="border:2px solid #a78bfa">
+<h3>👋 Hey Aura ile Uyan</h3>
+<p id="uyanmaDurum">Kapalı - "Hey Aura" veya "Aura" deyince uyanırım</p>
+<button class="mor" onclick="uyanmaBaslat()">👂 Hey Aura Dinlemeyi Aç</button>
+<button class="kirmizi" onclick="uyanmaDurdur()">Kapat</button>
+</div>
+
+<!-- GİRİŞ + MİSAFİR -->
+<div class="box">
+<h3>🔐 Giriş</h3>
+<input id="email" placeholder="Email">
+<input id="sifre" type="password" placeholder="Şifre">
+<br>
+<button class="mor" onclick="kayitOl()">Kayıt Ol</button>
+<button class="mavi" onclick="girisYap()">Giriş Yap</button><br>
+<button class="yesil" onclick="misafirGiris()">Misafir Olarak Devam Et</button>
+<p id="kullanici"></p>
+</div>
+
+<!-- SES + LIVE -->
+<div class="box">
+<h3>🎙️ Sesli + Live</h3>
+<p id="durum">Hazır, dinlemiyorum</p>
+<button class="yesil" onclick="dinle()">🎤 Konuş</button>
+<button class="mavi" onclick="liveBaslat()">🔴 Live Başlat</button>
+<button class="kirmizi" onclick="liveDurdur()">⏹️ Live Durdur</button>
+<div id="cevap">Burada konuşman çıkacak...</div>
+</div>
+
+<!-- HABER AJANSI -->
+<div class="box">
+<h3>📰 FLOWMAURA Haber Ajansı</h3>
+<button class="turuncu" onclick="haberGetir()">Haberleri Getir</button>
+<div id="haberBox">Haberler burada çıkacak...</div>
+</div>
+
+<!-- SİHİR MODU -->
+<div class="box">
+<h3>✨ Sihir Modu</h3>
+<input id="dilek" placeholder="Dileğini yaz...">
+<button class="mor" onclick="sihirYap()">🪄 Sihir Yap</button>
+<div id="sihirBox">Sihir burada çıkacak...</div>
+</div>
+
+<!-- BLUETOOTH -->
+<div class="box">
+<h3>📶 Bluetooth</h3>
+<button class="mavi" onclick="bluetoothBaglan()">📶 Bluetooth Cihazı Bul</button>
+<button class="kirmizi" onclick="bluetoothKes()">Bağlantıyı Kes</button>
+<p id="btDurum">Henüz bağlı cihaz yok</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL = "BURAYA_PROJECT_URL";
+const SUPABASE_KEY = "BURAYA_ANON_KEY";
+let supabaseClient=null;
+try{ supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY); }catch(e){}
+async function kayitOl(){ const email=document.getElementById('email').value; const password=document.getElementById('sifre').value; const {error}=await supabaseClient.auth.signUp({email,password}); if(error) alert(error.message); else alert('Kayıt oldu!'); }
+async function girisYap(){ const email=document.getElementById('email').value; const password=document.getElementById('sifre').value; const {error,data}=await supabaseClient.auth.signInWithPassword({email,password}); if(error) alert(error.message); else {document.getElementById('kullanici').innerText='Hoşgeldin: '+data.user.email;} }
+function misafirGiris(){ alert('Misafir girişi açıldı kral'); document.getElementById('kullanici').innerText='Misafir olarak girdin'; document.getElementById('cevap').innerText='Misafir modundasın 💎'; }
+
+function konus(metin){ const ses=new SpeechSynthesisUtterance(metin); ses.lang='tr-TR'; window.speechSynthesis.speak(ses); }
+function cevapUret(sordu){
+  let cevap="Anladım kral, "+sordu+" hakkında düşünüyorum.";
+  let kucuk=sordu.toLowerCase();
+  if(kucuk.includes('selam')||kucuk.includes('merhaba')) cevap="Selam kral! FLOWMAURA burada, seni dinliyorum.";
+  if(kucuk.includes('nasılsın')) cevap="Çok iyiyim, seninle konuşunca daha da iyi oldum.";
+  if(kucuk.includes('aura')||kucuk.includes('flowmaura')) cevap="Ben buradayım kral, seni dinliyorum, söyle.";
+  document.getElementById('cevap').innerHTML="<b>Sen:</b> "+sordu+"<br><br><b>FLOWMAURA:</b> "+cevap;
+  konus(cevap);
+}
+let recognition; let liveAcik=false;
+function dinle(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Chrome kullan kral'); return;}
+  recognition=new SR(); recognition.lang='tr-TR';
+  document.getElementById('durum').innerText='🎤 Dinliyorum...';
+  recognition.start();
+  recognition.onresult=(e)=>{ cevapUret(e.results[0][0].transcript); };
+}
+function liveBaslat(){ liveAcik=true; document.getElementById('durum').innerText='🔴 LIVE AÇIK'; konus('Live modu açıldı kral'); liveDongu(); }
+function liveDurdur(){ liveAcik=false; if(recognition) recognition.stop(); document.getElementById('durum').innerText='Live kapatıldı'; }
+function liveDongu(){
+  if(!liveAcik) return;
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SR(); recognition.lang='tr-TR'; recognition.start();
+  recognition.onresult=(e)=>{ cevapUret(e.results[0][0].transcript); setTimeout(()=>{if(liveAcik) liveDongu();},1500); };
+  recognition.onerror=()=>{ if(liveAcik) setTimeout(liveDongu,1000); };
+  recognition.onend=()=>{ if(liveAcik) setTimeout(liveDongu,500); };
+}
+
+// HEY AURA / AURA UYANMA MODU
+let uyanmaAcik=false; let uyanmaRec=null; let uyanik=false;
+function uyanmaBaslat(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ alert('Chrome kullan kral, Safari uyanma modunu desteklemiyor'); return; }
+  uyanmaAcik=true; uyanik=false;
+  document.getElementById('uyanmaDurum').innerText='👂 Dinliyorum... "Hey Aura" veya "Aura" de, uyanayım';
+  konus('Hey Aura dinlemesi açıldı kral, Aura demen yeterli');
+  uyanmaDongu();
+}
+function uyanmaDurdur(){
+  uyanmaAcik=false; uyanik=false;
+  if(uyanmaRec) uyanmaRec.stop();
+  document.getElementById('uyanmaDurum').innerText='Kapalı';
+}
+function uyanmaDongu(){
+  if(!uyanmaAcik) return;
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  uyanmaRec=new SR(); uyanmaRec.lang='tr-TR'; uyanmaRec.continuous=false; uyanmaRec.interimResults=false;
+  uyanmaRec.start();
+  uyanmaRec.onresult=(e)=>{
+    let duyulan=e.results[0][0].transcript.toLowerCase();
+    console.log('Duyuldu:', duyulan);
+    // HEY AURA veya sadece AURA dediyse uyan - flowmaura da yedek olarak kalıyor
+    if(duyulan.includes('hey aura') || duyulan.includes('ey aura') || duyulan.includes('hey avra') || duyulan.includes('aura') || duyulan.includes('avra') || duyulan.includes('flowmaura') || duyulan.includes('hey flowmaura')){
+      uyanik=true;
+      document.getElementById('uyanmaDurum').innerText='✨ Uyandım kral! Seni dinliyorum...';
+      konus('Efendim kral, seni dinliyorum');
+      setTimeout(()=>{ dinle(); }, 1200);
+      // 8 saniye sonra tekrar uykuya dön, tekrar Aura bekle
+      setTimeout(()=>{ uyanik=false; if(uyanmaAcik){ document.getElementById('uyanmaDurum').innerText='👂 Dinliyorum... "Hey Aura" veya "Aura" de'; uyanmaDongu(); } }, 8000);
+    } else {
+      // Aura demediyse dinlemeye devam et
+      if(uyanmaAcik) setTimeout(uyanmaDongu, 300);
+    }
+  };
+  uyanmaRec.onerror=()=>{ if(uyanmaAcik) setTimeout(uyanmaDongu, 1000); };
+  uyanmaRec.onend=()=>{ if(uyanmaAcik && !uyanik) setTimeout(uyanmaDongu, 300); };
+}
+
+function haberGetir(){
+  const haberler=["🚀 Teknoloji: Yapay zeka her gün güçleniyor, FLOWMAURA de büyüyor.","⚽ Spor: Bugün büyük maç var.","🌍 Dünya: Bilim insanları yeni bir keşif yaptı.","💎 FLOWMAURA: FLOWMAURA AI yeni Hey Aura özelliği ile seslenince uyanıyor!"];
+  document.getElementById('haberBox').innerHTML=haberler.join('<br><br>');
+  konus('Haberleri getirdim kral');
+}
+function sihirYap(){
+  const dilek=document.getElementById('dilek').value || "güzel bir gün";
+  const secilen="✨ Abrakadabra! Dileğin kabul oldu: "+dilek;
+  document.getElementById('sihirBox').innerText=secilen; konus(secilen);
+}
+let btCihaz=null;
+async function bluetoothBaglan(){
+  if(!navigator.bluetooth){ alert('Chrome kullan ve Bluetoothu aç kral'); return; }
+  try{
+    btCihaz=await navigator.bluetooth.requestDevice({acceptAllDevices:true, optionalServices:['battery_service','device_information']});
+    document.getElementById('btDurum').innerText='Bağlı cihaz: '+btCihaz.name;
+    alert('Bağlandı kral: '+btCihaz.name);
+  }catch(e){ document.getElementById('btDurum').innerText='Bağlantı iptal edildi'; }
+}
+function bluetoothKes(){ if(btCihaz && btCihaz.gatt && btCihaz.gatt.connected){ btCihaz.gatt.disconnect(); } btCihaz=null; document.getElementById('btDurum').innerText='Bağlantı kesildi'; }
+</script>
+</body>
+</html>
