@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FLOWMAURA AI</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#050508">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <style>
 body{background:#050508;color:white;font-family:Arial;text-align:center;padding:20px;margin:0}
 h1{font-size:42px;letter-spacing:5px;color:#a78bfa}
@@ -13,13 +16,32 @@ button{padding:12px 18px;border:none;border-radius:12px;margin:5px;font-weight:b
 .mor{background:#7c3aed;color:white}.mavi{background:#2563eb;color:white}.yesil{background:#16a34a;color:white}.kirmizi{background:#dc2626;color:white}.turuncu{background:#ea580c;color:white}.pembe{background:#ec4899;color:white}
 #cevap,#haberBox,#sihirBox{background:#1a1a24;padding:15px;border-radius:12px;min-height:60px;text-align:left;margin-top:10px}
 .cihaz{background:#1a1a24;padding:12px;border-radius:12px;margin:6px 0;display:flex;justify-content:space-between;align-items:center;text-align:left}
+#splash{position:fixed;inset:0;background:#050508;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s}
+#splash h1{font-size:50px;letter-spacing:8px;color:#a78bfa;animation:parla 1.2s infinite alternate}
+@keyframes parla{from{opacity:.5;transform:scale(.95)}to{opacity:1;transform:scale(1.05)}}
 </style>
 </head>
 <body>
+
+<div id="splash"><h1>FLOWMAURA</h1><p>Gelecek burada...</p><p style="font-size:12px;margin-top:20px">Yükleniyor...</p></div>
+
 <h1>FLOWMAURA AI</h1>
 <p>Gelecek burada. İzleyen değil, yazan ol.</p>
 
-<!-- HEY AURA -->
+<div class="box" style="border:2px solid #22c55e">
+<h3>🧠 Aura Hazır</h3>
+<p id="groqDurum">✅ Aura hazır kral, sor sor!</p>
+<p style="opacity:.6;font-size:12px">Herkes key girmeden kullanabilir</p>
+</div>
+
+<div class="box" style="border:2px solid #a78bfa">
+<h3>📱 Uygulama + Arka Plan</h3>
+<button class="yesil" onclick="uygulamayiKur()">📱 Telefona Uygulama Olarak Kur</button>
+<button class="turuncu" onclick="bildirimIzinIste()">🔔 Bildirimleri Aç - Kapalıyken Bile Çalışsın</button>
+<button class="mavi" onclick="cihazimiYonet()">📱 Telefonumu / Bilgisayarımı Yönet</button>
+<p id="pwaDurum" style="opacity:.7;font-size:13px">PWA hazır değilse yukarıdan kur</p>
+</div>
+
 <div class="box" style="border:2px solid #a78bfa">
 <h3>👋 Hey Aura ile Uyan</h3>
 <p id="uyanmaDurum">Kapalı - "Hey Aura" veya "Aura" deyince uyanırım</p>
@@ -27,7 +49,6 @@ button{padding:12px 18px;border:none;border-radius:12px;margin:5px;font-weight:b
 <button class="kirmizi" onclick="uyanmaDurdur()">Kapat</button>
 </div>
 
-<!-- GİRİŞ -->
 <div class="box">
 <h3>🔐 Giriş</h3>
 <input id="email" placeholder="Email">
@@ -39,7 +60,6 @@ button{padding:12px 18px;border:none;border-radius:12px;margin:5px;font-weight:b
 <p id="kullanici"></p>
 </div>
 
-<!-- SES + LIVE -->
 <div class="box">
 <h3>🎙️ Sesli + Live</h3>
 <p id="durum">Hazır, dinlemiyorum</p>
@@ -49,33 +69,42 @@ button{padding:12px 18px;border:none;border-radius:12px;margin:5px;font-weight:b
 <div id="cevap">Burada konuşman çıkacak...</div>
 </div>
 
-<!-- EVRENSEL CİHAZ BAĞLANTISI - AKILLI EV + TV + BLUETOOTH -->
+<div class="box" style="border:2px solid #ec4899">
+<h3>📱 Uygulama Aç + Mesaj Gönder - HERKESE</h3>
+<input id="appKisi" placeholder="Kime? Örn: Ayşe, Mehmet, Elif, Can...">
+<input id="appMesaj" placeholder="Mesaj ne? Örn: Dışarı çıkalım mı?">
+<br>
+<button class="pembe" onclick="uygulamaAc('instagram', document.getElementById('appKisi').value, document.getElementById('appMesaj').value)">📸 Instagram'dan Gönder</button>
+<button class="yesil" onclick="uygulamaAc('whatsapp', document.getElementById('appKisi').value, document.getElementById('appMesaj').value)">💬 WhatsApp'tan Gönder</button>
+<br>
+<button class="mavi" onclick="uygulamaAc('youtube')">▶️ YouTube Aç</button>
+<button class="mor" onclick="uygulamaAc('tiktok')">🎵 TikTok Aç</button>
+<button class="yesil" onclick="uygulamaAc('spotify')">🎧 Spotify Aç</button>
+<p style="opacity:.6;font-size:12px">Sesli: "Aura Instagram'dan Ayşe'ye dışarı çıkalım de"</p>
+</div>
+
 <div class="box" style="border:2px solid #22c55e">
 <h3>🏠📺 Evrensel Bağlantı</h3>
-<p style="opacity:.7;font-size:13px">Kullanıcı kendi hesabını bağlar, kendi cihazını kullanır</p>
 <p id="evDurum">Henüz cihaz bağlı değil</p>
-
 <select id="platformSec">
-  <option value="bluetooth">📶 Bluetooth - Kulaklık, Hoparlör, Saat, Bileklik</option>
-  <option value="tuya">🏠 Tuya / Smart Life - Ampul, Priz, Klima, Perde</option>
-  <option value="google">🏠 Google Home - Nest, Ampul, TV, Hoparlör</option>
-  <option value="alexa">🏠 Alexa - Echo, Ampul, Priz</option>
-  <option value="hue">💡 Philips Hue - Hue Ampuller</option>
+  <option value="bluetooth">📶 Bluetooth - Kulaklık, Hoparlör, Saat</option>
+  <option value="tuya">🏠 Tuya / Smart Life - Ampul, Priz, Klima</option>
+  <option value="google">🏠 Google Home</option>
+  <option value="alexa">🏠 Alexa</option>
+  <option value="hue">💡 Philips Hue</option>
   <option value="xiaomi">🏠 Xiaomi / Mi Home</option>
-  <option value="samsung">📺 Samsung SmartThings - TV, Buzdolabı, Çamaşır</option>
-  <option value="lg">📺 LG ThinQ - LG TV, Klima</option>
-  <option value="homeassistant">🧠 Home Assistant - Hepsi Bir Arada</option>
-  <option value="cast">📺 Chromecast / Smart TV - Yansıtma</option>
+  <option value="samsung">📺 Samsung SmartThings</option>
+  <option value="lg">📺 LG ThinQ</option>
+  <option value="homeassistant">🧠 Home Assistant</option>
+  <option value="cast">📺 Chromecast / Smart TV</option>
 </select>
-<input id="apiKey" placeholder="API Key / Token / E-posta (platforma göre)">
-<input id="apiAdres" placeholder="Bridge IP / Sunucu Adresi (gerekirse, örn: 192.168.1.50)">
+<input id="apiKey" placeholder="API Key / Token / E-posta">
+<input id="apiAdres" placeholder="Bridge IP / Sunucu (gerekirse)">
 <br>
 <button class="yesil" onclick="evrenselBaglan()">🔗 Bağlan</button>
 <button class="mavi" onclick="bluetoothBaglan()">📶 Bluetooth ile Tara</button>
 <button class="turuncu" onclick="tvyeYansit()">📺 TV'ye Yansıt / Cast</button>
-
 <div id="cihazListesi" style="margin-top:15px"></div>
-
 <div style="margin-top:15px">
 <button class="yesil" onclick="tumAc()">💡 Tümünü Aç</button>
 <button class="kirmizi" onclick="tumKapat()">🌙 Tümünü Kapat</button>
@@ -85,14 +114,12 @@ button{padding:12px 18px;border:none;border-radius:12px;margin:5px;font-weight:b
 </div>
 </div>
 
-<!-- HABER -->
 <div class="box">
 <h3>📰 FLOWMAURA Haber Ajansı</h3>
 <button class="turuncu" onclick="haberGetir()">Haberleri Getir</button>
 <div id="haberBox">Haberler burada çıkacak...</div>
 </div>
 
-<!-- SİHİR -->
 <div class="box">
 <h3>✨ Sihir Modu</h3>
 <input id="dilek" placeholder="Dileğini yaz...">
@@ -102,30 +129,138 @@ button{padding:12px 18px;border:none;border-radius:12px;margin:5px;font-weight:b
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL = "BURAYA_PROJECT_URL";
-const SUPABASE_KEY = "BURAYA_ANON_KEY";
+window.addEventListener('load', ()=>{ setTimeout(()=>{ let s=document.getElementById('splash'); if(s){ s.style.opacity='0'; setTimeout(()=>s.remove(),600); } }, 2000); });
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').then(()=>{ document.getElementById('pwaDurum').innerText='✅ Arka plan hazır'; }).catch(()=>{}); }
+function uygulamayiKur(){ alert('IPHONE: Safari > Paylaş > Ana Ekrana Ekle\nANDROID: Chrome > 3 nokta > Ana Ekrana Ekle'); }
+async function bildirimIzinIste(){ let izin=await Notification.requestPermission(); if(izin==='granted'){ alert('Bildirim açıldı kral!'); new Notification('FLOWMAURA AI 💎', {body:'Aura arka planda çalışıyor kral!'}); } }
+function auraBildirimGonder(baslik, mesaj){ if(Notification.permission==='granted'){ new Notification(baslik, {body: mesaj}); } }
+async function cihazimiYonet(){
+  let pil='Bilinmiyor';
+  try{ let b=await navigator.getBattery(); pil='%'+Math.round(b.level*100)+' - '+(b.charging?'Şarj oluyor 🔋':'Şarj olmuyor'); }catch(e){}
+  alert('📱 CİHAZIN:\n\nPil: '+pil+'\nİnternet: '+(navigator.onLine?'Var ✅':'Yok ❌')+'\nEkran: '+screen.width+'x'+screen.height);
+}
+const SUPABASE_URL="BURAYA_PROJECT_URL";
+const SUPABASE_KEY="BURAYA_ANON_KEY";
 let supabaseClient=null;
 try{ supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY); }catch(e){}
 async function kayitOl(){ const email=document.getElementById('email').value; const password=document.getElementById('sifre').value; const {error}=await supabaseClient.auth.signUp({email,password}); if(error) alert(error.message); else alert('Kayıt oldu!'); }
 async function girisYap(){ const email=document.getElementById('email').value; const password=document.getElementById('sifre').value; const {error,data}=await supabaseClient.auth.signInWithPassword({email,password}); if(error) alert(error.message); else {document.getElementById('kullanici').innerText='Hoşgeldin: '+data.user.email;} }
-function misafirGiris(){ alert('Misafir girişi açıldı kral'); document.getElementById('kullanici').innerText='Misafir olarak girdin'; document.getElementById('cevap').innerText='Misafir modundasın 💎'; }
+function misafirGiris(){ document.getElementById('kullanici').innerText='Misafir olarak girdin'; document.getElementById('cevap').innerText='Misafir modundasın 💎'; }
 function konus(metin){ const ses=new SpeechSynthesisUtterance(metin); ses.lang='tr-TR'; window.speechSynthesis.speak(ses); }
 
-function cevapUret(sordu){
+// ===== GROQ API - HERKES İÇİN GÖMÜLÜ =====
+// 👇👇👇 KRAL BURAYA KENDİ KEY'İNİ YAZ, TIRNAKLARIN İÇİNE 👇👇👇
+const SAHIP_GROQ_KEY ="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";
+// 👆👆👆 ÖRN: "gsk_abc123..." gibi, console.groq.com'dan al 👆👆👆
+let GROQ_KEY = SAHIP_GROQ_KEY;
+let GROQ_MODEL = 'llama-3.3-70b-versatile';
+
+async function groqSor(sordu){
+  if(!GROQ_KEY || !GROQ_KEY.includes('gsk_')) return null;
+  try{
+    let res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + GROQ_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        messages: [
+          {role:'system', content:'Sen FLOWMAURA AI, Aura adında samimi bir Türkçe asistansın. Kullanıcıya kral diye hitap et, kısa, eğlenceli ve havalı cevap ver. Türkçe konuş. 2-3 cümleyi geçme.'},
+          {role:'user', content: sordu}
+        ],
+        temperature: 0.7,
+        max_tokens: 300
+      })
+    });
+    let data = await res.json();
+    if(data.error){ console.log(data.error); return null; }
+    return data.choices[0].message.content;
+  }catch(e){ console.log(e); return null; }
+}
+window.addEventListener('load', ()=>{
+  if(GROQ_KEY && GROQ_KEY.includes('gsk_') && !GROQ_KEY.includes('BURAYA')){
+    document.getElementById('groqDurum').innerText = '✅ Aura hazır kral, sor sor! Herkes kullanabilir';
+  } else {
+    document.getElementById('groqDurum').innerText = '⚠️ Sahip henüz Groq key girmedi - Ezber modunda çalışıyor';
+  }
+});
+
+function isimVeMesajCikar(cumle){
+  let kucuk = cumle.toLowerCase();
+  let isim = ''; let mesaj = 'Dışarı çıkalım mı?';
+  let match = kucuk.match(/(?:instagramdan|instagram'dan|whatsapptan|whatsapp'tan|telegramdan|tiktoktan)\s+([a-zçğıöşü]+)['’]?(?:ye|ya|e|a|yi|yı|yu|yü|ne|na)?\s+(.+)/);
+  if(match){ isim = match[1]; mesaj = match[2].replace(/\s+(de|di|söyle|yaz|gönder|at)$/,'').trim(); }
+  else { let match2 = kucuk.match(/([a-zçğıöşü]+)['’]?(?:ye|ya|e|a)\s+(.+)/); if(match2){ isim = match2[1]; mesaj = match2[2].replace(/\s+(de|di|söyle|yaz|gönder)$/,'').trim(); } }
+  if(isim) isim = isim.charAt(0).toUpperCase() + isim.slice(1);
+  if(mesaj) mesaj = mesaj.charAt(0).toUpperCase() + mesaj.slice(1);
+  if(!mesaj.endsWith('?') && !mesaj.endsWith('!') && !mesaj.endsWith('.')) mesaj += ' mı?';
+  mesaj = mesaj.replace(' mı? mı?',' mı?').replace(' mi? mi?',' mi?');
+  return {isim, mesaj};
+}
+function uygulamaAc(uygulama, kisi, mesaj){
+  uygulama = (uygulama||'').toLowerCase();
+  kisi = (kisi || document.getElementById('appKisi')?.value || '').trim();
+  mesaj = (mesaj || document.getElementById('appMesaj')?.value || '').trim();
+  if(!kisi){ kisi = prompt('Kime gönderelim kral? İsim yaz:'); if(!kisi) return; document.getElementById('appKisi').value = kisi; }
+  if(!mesaj){ mesaj = prompt(kisi + "'e ne yazalım kral?"); if(!mesaj) mesaj = 'Dışarı çıkalım mı?'; document.getElementById('appMesaj').value = mesaj; }
+  if(uygulama.includes('whatsapp') || uygulama.includes('wp')){
+    let numara = prompt(kisi + "'in WhatsApp numarası ne kral? (örn: 905xxxxxxxxx)");
+    if(!numara) return;
+    window.open('https://wa.me/' + numara + '?text=' + encodeURIComponent(mesaj), '_blank');
+    konus('WhatsApp açılıyor kral, '+kisi+'e mesaj hazır'); return;
+  }
+  if(uygulama.includes('insta')){
+    let kullaniciAdi = prompt(kisi + "'in Instagram kullanıcı adı ne kral? (örn: ayse.34)");
+    if(!kullaniciAdi) return;
+    kullaniciAdi = kullaniciAdi.replace('@','');
+    navigator.clipboard.writeText(mesaj).then(()=>{ alert('Mesaj kopyalandı kral: "'+mesaj+'"\n\nInstagram açılıyor, '+kisi+'in DM\'ine yapıştırıp gönder.'); });
+    window.location.href = 'instagram://direct_v2/inbox/';
+    setTimeout(()=>{ window.open('https://www.instagram.com/' + kullaniciAdi + '/', '_blank'); }, 1000);
+    konus('Instagram açılıyor kral, mesajı kopyaladım'); return;
+  }
+  const linkler = { 'youtube':'https://www.youtube.com/', 'tiktok':'https://www.tiktok.com/', 'spotify':'https://open.spotify.com/', 'x':'https://x.com/', 'telegram':'https://web.telegram.org/', 'google':'https://www.google.com/', 'harita':'https://www.google.com/maps' };
+  if(linkler[uygulama]){ window.open(linkler[uygulama], '_blank'); konus(uygulama + ' açılıyor kral'); }
+  else { alert('Bu uygulamayı bulamadım kral: ' + uygulama); }
+}
+function cevapUretEski(sordu){
   let cevap="Anladım kral, "+sordu+" hakkında düşünüyorum.";
   let kucuk=sordu.toLowerCase();
   if(kucuk.includes('selam')||kucuk.includes('merhaba')) cevap="Selam kral! FLOWMAURA burada, seni dinliyorum.";
   if(kucuk.includes('nasılsın')) cevap="Çok iyiyim, seninle konuşunca daha da iyi oldum.";
-  if(kucuk.includes('aura')||kucuk.includes('flowmaura')) cevap="Ben buradayım kral, seni dinliyorum, söyle.";
-  // Sesli ev kontrolü - Aura, ışıkları aç gibi
+  if(kucuk.includes('aura')) cevap="Ben buradayım kral, seni dinliyorum, söyle.";
   if(kucuk.includes('ışık') && kucuk.includes('aç')){ tumAc(); cevap="Işıkları açtım kral."; }
   if(kucuk.includes('ışık') && kucuk.includes('kapat')){ tumKapat(); cevap="Işıkları kapattım kral."; }
-  if(kucuk.includes('tv') && kucuk.includes('aç')){ cevap="TV açılıyor kral, Cast menüsünden TVni seç."; tvyeYansit(); }
+  if(kucuk.includes('tv') && kucuk.includes('aç')){ cevap="TV açılıyor kral."; tvyeYansit(); }
   if(kucuk.includes('film')){ evSahne('film'); cevap="Film modu açıldı kral."; }
-  if(kucuk.includes('uyku')){ evSahne('uyku'); cevap="Uyku modu açıldı kral, her şeyi kapattım."; }
+  if(kucuk.includes('uyku')){ evSahne('uyku'); cevap="Uyku modu açıldı kral."; }
+  if(kucuk.includes('instagram') && (kucuk.includes('mesaj') || kucuk.includes('yaz') || kucuk.includes('söyle') || kucuk.includes(' de'))){
+    let {isim, mesaj} = isimVeMesajCikar(sordu);
+    if(!isim) isim = prompt('Kime kral? İsim söyle:');
+    if(isim){ document.getElementById('appKisi').value = isim; document.getElementById('appMesaj').value = mesaj; uygulamaAc('instagram', isim, mesaj); cevap = "Instagram açılıyor kral, " + isim + "'e '" + mesaj + "' mesajını hazırladım."; }
+  }
+  if(kucuk.includes('whatsapp') && (kucuk.includes('mesaj') || kucuk.includes('yaz') || kucuk.includes('söyle') || kucuk.includes(' de'))){
+    let {isim, mesaj} = isimVeMesajCikar(sordu);
+    if(!isim) isim = prompt('Kime kral? İsim söyle:');
+    if(isim){ document.getElementById('appKisi').value = isim; document.getElementById('appMesaj').value = mesaj; uygulamaAc('whatsapp', isim, mesaj); cevap = "WhatsApp açılıyor kral, " + isim + "'e mesaj hazır."; }
+  }
+  if(kucuk.includes('youtube') && kucuk.includes('aç')){ uygulamaAc('youtube'); cevap="YouTube açılıyor kral."; }
+  if(kucuk.includes('tiktok') && kucuk.includes('aç')){ uygulamaAc('tiktok'); cevap="TikTok açılıyor kral."; }
+  if(kucuk.includes('spotify') && kucuk.includes('aç')){ uygulamaAc('spotify'); cevap="Spotify açılıyor kral."; }
   document.getElementById('cevap').innerHTML="<b>Sen:</b> "+sordu+"<br><br><b>FLOWMAURA:</b> "+cevap;
   konus(cevap);
 }
+async function cevapUretGroq(sordu){
+  let kucuk = sordu.toLowerCase();
+  if(kucuk.includes('ışık') || kucuk.includes('tv') || kucuk.includes('film') || kucuk.includes('uyku') || kucuk.includes('instagram') || kucuk.includes('whatsapp') || kucuk.includes('youtube') || kucuk.includes('tiktok') || kucuk.includes('spotify')){
+    cevapUretEski(sordu); return;
+  }
+  document.getElementById('cevap').innerHTML = '<b>Sen:</b> '+sordu+'<br><br><b>FLOWMAURA:</b> Düşünüyorum... 🤔';
+  let groqCevap = await groqSor(sordu);
+  if(groqCevap){
+    document.getElementById('cevap').innerHTML = "<b>Sen:</b> "+sordu+"<br><br><b>FLOWMAURA (Groq 🧠):</b> "+groqCevap;
+    konus(groqCevap);
+  } else { cevapUretEski(sordu); }
+}
+function cevapUret(sordu){ cevapUretGroq(sordu); }
 let recognition; let liveAcik=false;
 function dinle(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -151,131 +286,91 @@ function uyanmaBaslat(){
   if(!SR){ alert('Chrome kullan kral'); return; }
   uyanmaAcik=true; uyanik=false;
   document.getElementById('uyanmaDurum').innerText='👂 Dinliyorum... "Hey Aura" veya "Aura" de';
-  konus('Hey Aura dinlemesi açıldı kral, Aura demen yeterli');
+  konus('Hey Aura dinlemesi açıldı kral');
   uyanmaDongu();
 }
 function uyanmaDurdur(){ uyanmaAcik=false; uyanik=false; if(uyanmaRec) uyanmaRec.stop(); document.getElementById('uyanmaDurum').innerText='Kapalı'; }
 function uyanmaDongu(){
   if(!uyanmaAcik) return;
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  uyanmaRec=new SR(); uyanmaRec.lang='tr-TR'; uyanmaRec.continuous=false; uyanmaRec.interimResults=false;
+  uyanmaRec=new SR(); uyanmaRec.lang='tr-TR'; uyanmaRec.continuous=false;
   uyanmaRec.start();
   uyanmaRec.onresult=(e)=>{
     let duyulan=e.results[0][0].transcript.toLowerCase();
-    if(duyulan.includes('hey aura') || duyulan.includes('ey aura') || duyulan.includes('aura') || duyulan.includes('avra') || duyulan.includes('flowmaura')){
+    if(duyulan.includes('aura') || duyulan.includes('avra') || duyulan.includes('flowmaura')){
       uyanik=true;
       document.getElementById('uyanmaDurum').innerText='✨ Uyandım kral! Seni dinliyorum...';
       konus('Efendim kral, seni dinliyorum');
       setTimeout(()=>{ dinle(); }, 1200);
-      setTimeout(()=>{ uyanik=false; if(uyanmaAcik){ document.getElementById('uyanmaDurum').innerText='👂 Dinliyorum... "Hey Aura" veya "Aura" de'; uyanmaDongu(); } }, 8000);
+      setTimeout(()=>{ uyanik=false; if(uyanmaAcik){ document.getElementById('uyanmaDurum').innerText='👂 Dinliyorum... "Hey Aura" de'; uyanmaDongu(); } }, 8000);
     } else { if(uyanmaAcik) setTimeout(uyanmaDongu, 300); }
   };
   uyanmaRec.onerror=()=>{ if(uyanmaAcik) setTimeout(uyanmaDongu, 1000); };
   uyanmaRec.onend=()=>{ if(uyanmaAcik && !uyanik) setTimeout(uyanmaDongu, 300); };
 }
-
-// ===== EVRENSEL CİHAZ SİSTEMİ =====
 let evCihazlar = JSON.parse(localStorage.getItem('flowmaura_cihazlar') || '[]');
 let bagliPlatform = localStorage.getItem('flowmaura_platform') || '';
-
 function kaydet(){ localStorage.setItem('flowmaura_cihazlar', JSON.stringify(evCihazlar)); localStorage.setItem('flowmaura_platform', bagliPlatform); }
-
 function varsayilanCihazlar(platform){
   const setler = {
     bluetooth:[{isim:'Bluetooth Hoparlör', tip:'hoparlör', durum:false}],
     tuya:[{isim:'Salon Ampulü (Tuya)', tip:'ışık', durum:false},{isim:'Akıllı Priz (Tuya)', tip:'priz', durum:false},{isim:'Salon Kliması (Tuya)', tip:'klima', durum:false}],
-    google:[{isim:'Salon Işığı (Google)', tip:'ışık', durum:false},{isim:'TV (Google)', tip:'tv', durum:false},{isim:'Nest Hoparlör', tip:'hoparlör', durum:false}],
+    google:[{isim:'Salon Işığı (Google)', tip:'ışık', durum:false},{isim:'TV (Google)', tip:'tv', durum:false}],
     alexa:[{isim:'Echo Hoparlör', tip:'hoparlör', durum:false},{isim:'Yatak Odası Işığı (Alexa)', tip:'ışık', durum:false}],
-    hue:[{isim:'Hue Salon Ampulü', tip:'ışık', durum:false},{isim:'Hue Yatak Odası', tip:'ışık', durum:false}],
+    hue:[{isim:'Hue Salon Ampulü', tip:'ışık', durum:false}],
     xiaomi:[{isim:'Mi Ampul', tip:'ışık', durum:false},{isim:'Mi Robot Süpürge', tip:'süpürge', durum:false}],
     samsung:[{isim:'Samsung TV', tip:'tv', durum:false},{isim:'Samsung Klima', tip:'klima', durum:false}],
-    lg:[{isim:'LG TV', tip:'tv', durum:false},{isim:'LG Klima', tip:'klima', durum:false}],
-    homeassistant:[{isim:'Salon Işığı (HA)', tip:'ışık', durum:false},{isim:'TV (HA)', tip:'tv', durum:false},{isim:'Priz (HA)', tip:'priz', durum:false}],
+    lg:[{isim:'LG TV', tip:'tv', durum:false}],
+    homeassistant:[{isim:'Salon Işığı (HA)', tip:'ışık', durum:false},{isim:'TV (HA)', tip:'tv', durum:false}],
     cast:[{isim:'Smart TV (Cast)', tip:'tv', durum:false}],
   };
   return setler[platform] || [];
 }
-
 function evrenselBaglan(){
   let platform = document.getElementById('platformSec').value;
   let key = document.getElementById('apiKey').value;
-  let adres = document.getElementById('apiAdres').value;
-  // Bluetooth seçildiyse direkt tara
   if(platform==='bluetooth'){ bluetoothBaglan(); return; }
   if(platform==='cast'){ tvyeYansit(); return; }
-  // Diğer platformlarda kullanıcı kendi keyini girer
-  if(!key && platform!=='homeassistant'){
-    if(!confirm('API Key girmedin kral, demo cihazlarla devam edeyim mi? Gerçek cihaz için key lazım.')) return;
-  }
+  if(!key && platform!=='homeassistant'){ if(!confirm('API Key girmedin kral, demo cihazlarla devam edeyim mi?')) return; }
   bagliPlatform = platform;
   if(evCihazlar.length===0) evCihazlar = varsayilanCihazlar(platform).map((c,i)=>({...c, id:Date.now()+i, platform}));
-  else {
-    // Yeni platform cihazlarını ekle
-    let yeni = varsayilanCihazlar(platform).map((c,i)=>({...c, id:Date.now()+i, platform}));
-    evCihazlar = [...evCihazlar, ...yeni];
-  }
+  else { let yeni = varsayilanCihazlar(platform).map((c,i)=>({...c, id:Date.now()+i, platform})); evCihazlar = [...evCihazlar, ...yeni]; }
   kaydet(); cihazlariGoster();
-  document.getElementById('evDurum').innerText = '✅ Bağlandı: '+platform+' - '+evCihazlar.length+' cihaz';
-  konus('Bağlandım kral, cihazların hazır');
-  if(key) localStorage.setItem('flowmaura_'+platform+'_key', key);
-  if(adres) localStorage.setItem('flowmaura_'+platform+'_adres', adres);
+  document.getElementById('evDurum').innerText = '✅ Bağlandı: '+platform;
+  konus('Bağlandım kral');
 }
-
 let btCihaz=null;
 async function bluetoothBaglan(){
   if(!navigator.bluetooth){ alert('Chrome kullan ve Bluetoothu aç kral'); return; }
   try{
-    document.getElementById('evDurum').innerText='🔍 Bluetooth cihazlar aranıyor...';
-    btCihaz=await navigator.bluetooth.requestDevice({acceptAllDevices:true, optionalServices:['battery_service','device_information','generic_access']});
+    btCihaz=await navigator.bluetooth.requestDevice({acceptAllDevices:true, optionalServices:['battery_service']});
     try{ await btCihaz.gatt.connect(); }catch(e){}
-    let yeni = {id:Date.now(), isim: btCihaz.name || 'Bluetooth Cihazı', tip:'hoparlör', durum:true, platform:'bluetooth'};
-    evCihazlar.push(yeni); kaydet(); cihazlariGoster();
+    evCihazlar.push({id:Date.now(), isim: btCihaz.name || 'Bluetooth Cihazı', tip:'hoparlör', durum:true, platform:'bluetooth'}); kaydet(); cihazlariGoster();
     document.getElementById('evDurum').innerText='✅ Bağlı: '+btCihaz.name;
-    konus('Bağlandım kral, '+btCihaz.name);
   }catch(e){ document.getElementById('evDurum').innerText='Bağlantı iptal edildi'; }
 }
-
 function cihazlariGoster(){
-  if(evCihazlar.length===0){ document.getElementById('cihazListesi').innerHTML='<p style="opacity:.6">Henüz cihaz yok. Yukarıdan platform seçip Bağlan de.</p>'; return; }
+  if(evCihazlar.length===0){ document.getElementById('cihazListesi').innerHTML='<p style="opacity:.6">Henüz cihaz yok.</p>'; return; }
   let html='';
-  evCihazlar.forEach(c=>{
-    html+=`<div class="cihaz"><span>${c.durum?'🟢':'🔴'} ${c.isim} <small style="opacity:.6">(${c.platform||''})</small></span><div><button class="${c.durum?'kirmizi':'yesil'}" onclick="cihazDegistir(${c.id})">${c.durum?'Kapat':'Aç'}</button><button class="kirmizi" onclick="cihazSil(${c.id})">✕</button></div></div>`;
-  });
+  evCihazlar.forEach(c=>{ html+=`<div class="cihaz"><span>${c.durum?'🟢':'🔴'} ${c.isim}</span><div><button class="${c.durum?'kirmizi':'yesil'}" onclick="cihazDegistir(${c.id})">${c.durum?'Kapat':'Aç'}</button><button class="kirmizi" onclick="cihazSil(${c.id})">✕</button></div></div>`; });
   document.getElementById('cihazListesi').innerHTML=html;
 }
-function cihazDegistir(id){
-  let c=evCihazlar.find(x=>x.id===id); if(!c) return;
-  c.durum=!c.durum; kaydet(); cihazlariGoster();
-  document.getElementById('evDurum').innerText=c.isim+(c.durum?' açıldı ✅':' kapatıldı');
-  konus(c.isim+(c.durum?' açıldı kral':' kapatıldı kral'));
-  // GERÇEK CİHAZA KOMUT - kullanıcının platformuna göre API çağrısı buraya gelecek
-  // Örnek: fetch('https://api.tuya.com/v1/devices/'+c.id, {method:'POST', headers:{'Authorization': localStorage.getItem('flowmaura_tuya_key')}})
-}
+function cihazDegistir(id){ let c=evCihazlar.find(x=>x.id===id); if(!c) return; c.durum=!c.durum; kaydet(); cihazlariGoster(); }
 function cihazSil(id){ evCihazlar=evCihazlar.filter(x=>x.id!==id); kaydet(); cihazlariGoster(); }
 function tumAc(){ evCihazlar.forEach(c=>c.durum=true); kaydet(); cihazlariGoster(); konus('Tüm cihazlar açıldı kral'); }
 function tumKapat(){ evCihazlar.forEach(c=>c.durum=false); kaydet(); cihazlariGoster(); konus('Tüm cihazlar kapatıldı kral'); }
 function evSahne(mod){
-  if(mod==='film'){ evCihazlar.forEach(c=>{ if(c.tip==='ışık') c.durum=false; if(c.tip==='tv') c.durum=true; }); konus('Film modu açıldı kral'); }
-  if(mod==='uyku'){ evCihazlar.forEach(c=>c.durum=false); konus('Uyku modu açıldı kral'); }
-  if(mod==='parti'){ evCihazlar.forEach(c=>{ if(c.tip==='ışık'||c.tip==='hoparlör') c.durum=true; }); konus('Parti modu açıldı kral'); }
+  if(mod==='film'){ evCihazlar.forEach(c=>{ if(c.tip==='ışık') c.durum=false; if(c.tip==='tv') c.durum=true; }); }
+  if(mod==='uyku'){ evCihazlar.forEach(c=>c.durum=false); }
+  if(mod==='parti'){ evCihazlar.forEach(c=>{ if(c.tip==='ışık'||c.tip==='hoparlör') c.durum=true; }); }
   kaydet(); cihazlariGoster();
 }
-function tvyeYansit(){
-  if(evCihazlar.find(c=>c.tip==='tv')===undefined){
-    evCihazlar.push({id:Date.now(), isim:'Smart TV (Cast)', tip:'tv', durum:true, platform:'cast'}); kaydet(); cihazlariGoster();
-  }
-  alert('TVye bağlanmak için kral:\n1. Telefonda: Ekran Yansıtma / Smart View\n2. PCde: Chrome > 3 nokta > Yayınla / Cast > TVni seç');
-  konus('TVye bağlanmak için ekran yansıtmayı kullan kral');
-}
+function tvyeYansit(){ alert('TVye bağlanmak için kral:\n1. Telefonda: Ekran Yansıtma / Smart View\n2. PCde: Chrome > 3 nokta > Yayınla > TVni seç'); }
 function haberGetir(){
-  const haberler=["🚀 Teknoloji: Yapay zeka her gün güçleniyor, FLOWMAURA de büyüyor.","⚽ Spor: Bugün büyük maç var.","🌍 Dünya: Bilim insanları yeni bir keşif yaptı.","💎 FLOWMAURA: FLOWMAURA AI yeni Hey Aura özelliği ile seslenince uyanıyor!"];
+  const haberler=["🚀 Teknoloji: Yapay zeka her gün güçleniyor.","⚽ Spor: Bugün büyük maç var.","🌍 Dünya: Bilim insanları yeni bir keşif yaptı.","💎 FLOWMAURA: Hey Aura özelliği ile seslenince uyanıyor!"];
   document.getElementById('haberBox').innerHTML=haberler.join('<br><br>'); konus('Haberleri getirdim kral');
 }
-function sihirYap(){
-  const dilek=document.getElementById('dilek').value || "güzel bir gün";
-  const secilen="✨ Abrakadabra! Dileğin kabul oldu: "+dilek;
-  document.getElementById('sihirBox').innerText=secilen; konus(secilen);
-}
+function sihirYap(){ const dilek=document.getElementById('dilek').value || "güzel bir gün"; document.getElementById('sihirBox').innerText="✨ Abrakadabra! Dileğin kabul oldu: "+dilek; konus("Dileğin kabul oldu kral"); }
 cihazlariGoster();
 </script>
 </body>
