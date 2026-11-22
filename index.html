@@ -139,8 +139,8 @@ async function cihazimiYonet(){
   try{ let b=await navigator.getBattery(); pil='%'+Math.round(b.level*100)+' - '+(b.charging?'Şarj oluyor 🔋':'Şarj olmuyor'); }catch(e){}
   alert('📱 CİHAZIN:\n\nPil: '+pil+'\nİnternet: '+(navigator.onLine?'Var ✅':'Yok ❌')+'\nEkran: '+screen.width+'x'+screen.height);
 }
-const SUPABASE_URL="BURAYA_PROJECT_URL";
-const SUPABASE_KEY="BURAYA_ANON_KEY";
+const SUPABASE_URL="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+const SUPABASE_KEY="sb_publishable_kZ3aqpAtxlcDKOHDeOpkEA_1cdRp2PN";
 let supabaseClient=null;
 try{ supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY); }catch(e){}
 async function kayitOl(){ const email=document.getElementById('email').value; const password=document.getElementById('sifre').value; const {error}=await supabaseClient.auth.signUp({email,password}); if(error) alert(error.message); else alert('Kayıt oldu!'); }
